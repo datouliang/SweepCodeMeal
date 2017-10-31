@@ -1,2 +1,2 @@
-# SweepCodeMeal-
+# SweepCodeMeal
 SweepCodeMeal 
