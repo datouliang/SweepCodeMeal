@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="columnMapper">
+	
+	<!-- 表名字 -->
+	<sql id="tableName">
+		w_column
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="filed">
+		COLUMN_ID,
+		NAME,
+		WEIGHT,
+		CREATE_DATE
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="filedValue">
+		#{COLUMN_ID},
+		#{NAME},
+		#{WEIGHT},
+		#{CREATE_DATE}
+	</sql>
+	
+	<select id="findColumn" resultType="com.fh.entity.column.Column">
+		select
+		<include refid="filed"></include>
+		from
+		<include refid="tableName"></include>
+		where
+			COLUMN_ID = #{id}
+	</select>
+	
+	<insert id="addColumn">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="filed"></include>
+		) values (
+		<include refid="filedValue"></include>
+		)
+	</insert>
+	
+	<update id="updateColumn">
+		update
+		<include refid="tableName"></include>
+		set
+			NAME = #{NAME},
+			WEIGHT = #{WEIGHT}
+		where
+			COLUMN_ID = #{COLUMN_ID}
+	</update>
+	
+	<delete id="deleteColumn">
+		delete from
+		<include refid="tableName"></include>
+		where
+			COLUMN_ID = #{COLUMN_ID}
+	</delete>
+	
+	<select id="findList"  resultType="com.fh.entity.column.Column">
+		select 
+		<include refid="filed"></include>
+		from
+		<include refid="tableName"></include>
+	</select>
+
+</mapper>

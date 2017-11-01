@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="orderMapper">
+
+	<!-- 表名 -->
+	<sql id="tableName">
+		w_order
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="filed">
+		ID,
+		WEIXIN_ID;
+		PAGE,
+		NUMBER,
+		TOTAL_PRICE,
+		TABLE_NUMBER,
+		NAEM,
+		STATUS,
+		DE_FLAGE,
+		REMARK
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="filedValue">
+		#{ID},
+		#{WEIXIN_ID};
+		#{PAGE},
+		#{NUMBER},
+		#{TOTAL_PRICE},
+		#{TABLE_NUMBER},
+		#{NAME},
+		#{STATUS},
+		#{DE_FLAGE},
+		#{REMARK}
+	</sql>
+	
+	<insert id="save">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="filed"></include>
+		) values (
+		<include refid="filedValue"></include>
+		)
+	</insert>
+	
+	<update id="delete">
+		update
+		<include refid="tableName"></include>
+		set
+			DE_FLAGE = "0"
+		where
+			ID = #{ID}
+	</update>
+	
+	<update id="update">
+		update
+		<include refid="tableName"></include>
+		set
+			PAGE = #{PAGE},
+			NUMBER = #{NUMBER},
+			TOTAL_PRICE = #{TOTAL_PRICE},
+			TABLE_NUMBER = #{TABLE_NUMBER},
+			NAME = #{NAME},
+			STATUS = #{STATUS},
+			REMARK = #{REMARK}
+		where
+			ID = #{ID} and
+			DE_FLAGE = "1"
+	</update>
+	
+	<select id="findForId" resultType="com.fh.entity.order.Order">
+		select * from
+		<include refid="tableName"></include>
+		where
+			ID = #{ID} and
+			DE_FLAGE = "1"	
+	</select>
+	
+	<select id="findList" resultType="com.fh.entity.order.Order">
+		select * from
+		<include refid="tableName"></include>
+		where
+			DE_FLAGE = "1"
+	</select>
+	
+	<select id="findForWeixinID" resultType="com.fh.entity.order.Order">
+		select * from
+		<include refid="tableName"></include>
+		where
+			WEIXIN_ID = #{WEIXIN_ID} and
+			DE_FLAGE = "1"
+	</select>
+
+</mapper>
