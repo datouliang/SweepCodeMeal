@@ -1,16 +1,17 @@
 package com.fh.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.fh.entity.system.User;
 import com.fh.util.Const;
 import com.fh.util.Jurisdiction;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 /**
  * 
 * 类名称：登录过滤，权限验证
 * 类描述： 
-* @author FH qq313596790[青苔]
+* @author FH [青苔]
 * 作者单位： 
 * 联系方式：
 * 创建时间：2015年11月2日

@@ -30,6 +30,7 @@
 					
 					<form action="variety/${msg }.do" name="Form" id="Form" method="post">
 						<input type="hidden" name="VARIETY_ID" id="VARIETY_ID" value="${pd.VARIETY_ID}"/>
+						<input type="hidden" name="USER_ID" id="USER_ID" value="${pd.USER_ID}"/>
 						<div id="zhongxin" style="padding-top: 13px;">
 						<table id="table_report" class="table table-striped table-bordered table-hover">
 							<%--<tr>
@@ -71,8 +72,16 @@
 									<input type="hidden" name="IMAGE" id="IMAGE" value="${pd.IMAGE}"/>
 									<div id="uploader-demo">
 										<!--用来存放item-->
-										<div id="fileList" class="uploader-list"></div>
-										<div id="filePicker">选择图片</div><a id="delete" title="删除" class="btn btn-sm btn-danger" onclick="makeAll('确定要删除选中的数据吗?');"><i class="ace-icon fa fa-trash-o bigger-120"></i></a>
+										<div id="fileList" class="uploader-list">
+											<c:if test="${pd.IMAGE != null}" >
+												<div id="WU_FILE_0" class="file-item thumbnail upload-state-done">
+													<img style="width:100px;height:100px;" src="<%=basePath%>uploadFiles/uploadImgs/${pd.IMAGE}">
+													<div class="info">${pd.NAME}</div>
+												</div>
+											</c:if>
+										</div>
+										<div id="filePicker">选择图片</div>
+										<a id="delete" title="删除" class="btn btn-sm btn-danger" onclick="makeAll('确定要删除选中的数据吗?');"><i class="ace-icon fa fa-trash-o bigger-120"></i></a>
 									</div>
 								</td>
 							</tr>
@@ -95,10 +104,14 @@
 									<a class="btn btn-xs btn-success" title="添加" onclick="addSpecification(this);" style="float:right;">
 										添加
 									</a>
-									<c:forEach items="${pd.specifications}" var="specification">
+									<input type="hidden" name="SPECIFICATION_ID"  id="SPECIFICATION_ID" />
+									<input type="hidden" name="SPECIFICATION_NAME"  id="SPECIFICATION_NAME" />
+									<input type="hidden" name="SPECIFICATION_PRICE"  id="SPECIFICATION_PRICE" />
+									<c:forEach items="${specifications}" var="specification">
 										<div>
 											规格:<input type="text" id="div_specification" class="a" placeholder="请输入规格" style="width:30%" value="${specification.NAME}">
 											价格:<input type="text" id="div_price" class="b" placeholder="请输入价格" style="width:30%" value="${specification.PRICE}">
+											<input type="hidden"  class="c"  value="${specification.SPECIFICATION_ID}"/>
 											<a style="cursor:pointer;" class="red"onclick="del(this);" title="删除">
 												<i class="ace-icon fa fa-trash-o bigger-130"></i>
 											</a>
@@ -142,8 +155,10 @@
 		<script type="text/javascript">
 		$(top.hangge());
 
-		var  specificationList = [];
-		var  priceList = [];
+		var  SPECIFICATION_ID = [];
+		var  SPECIFICATION_NAME = [];
+		var  SPECIFICATION_PRICE = [];
+
 
 		//保存
 		function save(){
@@ -209,8 +224,9 @@
 			return false;
 			}
 			forEach();
-			$("#SPECIFICATION").val(specificationList);
-
+			$("#SPECIFICATION_ID").val(SPECIFICATION_ID);
+            $("#SPECIFICATION_NAME").val(SPECIFICATION_NAME);
+			$("#SPECIFICATION_PRICE").val(SPECIFICATION_PRICE);
 			$("#Form").submit();
 			$("#zhongxin").hide();
 			$("#zhongxin2").show();
@@ -218,7 +234,8 @@
 		
 		$(function() {
 			$("#delete").hide();
-			//日期框
+			$("#filePicker").show();
+				//日期框
 			$('.date-picker').datepicker({autoclose: true,todayHighlight: true});
 		});
 
@@ -231,27 +248,45 @@
 					div.removeChild(div.firstChild);
 				}
 				var PATH = $("#IMAGE").val();
-				alert(PATH);
 				$.ajax({
 					type: "POST",
 					url: '<%=basePath%>variety/deltp.do',
 					data: {PATH:PATH},
-					dataType:'json',
 					//beforeSend: validateData,
 					cache: false,
 					success: function(data){
 						$("#filePicker").toggle();
 						$("#delete").toggle();
-						alert("删除成功");
+
 					},
 					error: function(data){
 						$("#filePicker").toggle();
 						$("#delete").toggle();
-						alert("删除成功");
+
 					}
 				});
 			}
 		}
+		//批量操作
+		function deleteImage(){
+				var PATH = $("#IMAGE").val();
+				$.ajax({
+					type: "POST",
+					url: '<%=basePath%>variety/deltp.do',
+					data: {PATH:PATH},
+					//beforeSend: validateData,
+					cache: false,
+					success: function(data){
+
+
+					},
+					error: function(data){
+
+					}
+				});
+		}
+
+		//新增规格
 		function addSpecification(add){
 				var $li = $( '<div>' +
 					"规格:"+
@@ -274,13 +309,15 @@
 		function forEach(){
 			var ss = $(".a"); //规格
 			var pp = $(".b"); //价格
+			var id = $(".c"); //id
 			for(var i=0;i<ss.length;i++){
 				var s = $(ss[i]).val();
 				var p = $(pp[i]).val();
-				var specification = s+","+p;
-				specificationList.push(specification);
+				var c = $(id[i]).val();
+				SPECIFICATION_NAME.push(s);
+				SPECIFICATION_ID.push(c);
+				SPECIFICATION_PRICE.push(p)
 			}
-			console.log(specificationList);
 
 		}
 

@@ -61,4 +61,11 @@ public interface SpecificationMapper {
      * @throws Exception
      */
     public List<PageData> findByFid(PageData pd) throws  Exception;
+
+    /**
+     * 根据主表ID删除对应规格
+     * @param pd
+     * @throws Exception
+     */
+    public void deleteByVariety(PageData pd) throws  Exception;
 }

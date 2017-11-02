@@ -30,6 +30,8 @@
 
         // 当有文件添加进来的时候
         uploader.on( 'fileQueued', function( file ) {
+            $("#fileList").empty();
+            deleteImage();
             var $li = $(
                     '<div id="' + file.id + '" class="file-item thumbnail">' +
                     '<img>' +

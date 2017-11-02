@@ -65,7 +65,6 @@
 		VARIETY_ID = #{VARIETY_ID},
 		NAME = #{NAME},
 		COLUMN_ID = #{COLUMN_ID},
-		CREATE_TIME = #{CREATE_TIME},
 		UPDATE_TIME = #{UPDATE_TIME},
 		PRICE = #{PRICE},
 		IMAGE = #{IMAGE},
@@ -97,6 +96,7 @@
 		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
 			and
 			(
+			  NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
 			<!--	根据需求自己加检索条件
                 字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
                  or
@@ -104,6 +104,11 @@
             -->
 			)
 		</if>
+		<if test=" pd.USER_ID != '' and pd.USER_ID != null"><!-- 关键词检索 -->
+			and
+			USER_ID = #{pd.USER_ID}
+		</if>
+		order by SORT desc
 	</select>
 
 	<!-- 列表(全部) -->
@@ -112,6 +117,8 @@
 		<include refid="Field"></include>
 		from
 		<include refid="tableName"></include>
+		where 1=1
+		order by SORT desc
 	</select>
 
 	<!-- 批量删除 -->

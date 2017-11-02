@@ -54,13 +54,10 @@
         update
         <include refid="tableName"></include>
         set
-        SPECIFICATION_ID = #{SPECIFICATION_ID},
         VARIETY_ID = #{VARIETY_ID},
         NAME = #{NAME},
-        CREATE_TIME = #{CREATE_TIME},
         UPDATE_TIME = #{UPDATE_TIME},
-        PRICE = #{PRICE},
-        SORT = #{SORT}
+        PRICE = #{PRICE}
         where
         SPECIFICATION_ID = #{SPECIFICATION_ID}
     </update>
@@ -92,6 +89,7 @@
             -->
             )
         </if>
+        order by CREATE_TIME desc
     </select>
 
     <!-- 列表(全部) -->
@@ -121,6 +119,14 @@
         <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </delete>
+
+    <!-- 更具主id删除-->
+    <delete id="deleteByVariety" parameterType="pd">
+        delete from
+        <include refid="tableName"></include>
+        where
+        VARIETY_ID = #{VARIETY_ID}
     </delete>
 
 

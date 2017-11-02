@@ -86,4 +86,13 @@ public class SpecificationService implements SpecificationMapper {
     public List<PageData> findByFid(PageData pd) throws Exception {
         return (List<PageData>)dao.findForList("SpecificationMapper.findByFid",pd);
     }
+
+    /**
+     * 根据主表ID删除对应规格
+     * @param pd
+     * @throws Exception
+     */
+    public void deleteByVariety(PageData pd) throws Exception {
+        dao.delete("SpecificationMapper.deleteByVariety",pd);
+    }
 }

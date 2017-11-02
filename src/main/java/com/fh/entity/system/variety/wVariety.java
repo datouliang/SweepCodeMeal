@@ -20,6 +20,33 @@ public class wVariety {
     private String USER_ID; //所属用户ID
     private String INFO; //菜品详情
     private String SPECIFICATION; //规格
+    private String SPECIFICATION_ID; //规格ID
+    private String SPECIFICATION_NAME; //规格ID
+    private String SPECIFICATION_PRICE; //规格ID
+
+    public String getSPECIFICATION_ID() {
+        return SPECIFICATION_ID;
+    }
+
+    public void setSPECIFICATION_ID(String SPECIFICATION_ID) {
+        this.SPECIFICATION_ID = SPECIFICATION_ID;
+    }
+
+    public String getSPECIFICATION_NAME() {
+        return SPECIFICATION_NAME;
+    }
+
+    public void setSPECIFICATION_NAME(String SPECIFICATION_NAME) {
+        this.SPECIFICATION_NAME = SPECIFICATION_NAME;
+    }
+
+    public String getSPECIFICATION_PRICE() {
+        return SPECIFICATION_PRICE;
+    }
+
+    public void setSPECIFICATION_PRICE(String SPECIFICATION_PRICE) {
+        this.SPECIFICATION_PRICE = SPECIFICATION_PRICE;
+    }
 
     public String getVARIETY_ID() {
         return VARIETY_ID;

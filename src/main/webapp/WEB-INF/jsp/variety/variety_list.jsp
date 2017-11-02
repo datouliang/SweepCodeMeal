@@ -42,7 +42,7 @@
 										</span>
 									</div>
 								</td>
-								<td style="padding-left:2px;"><input class="span10 date-picker" name="lastStart" id="lastStart"  value="" type="text" data-date-format="yyyy-mm-dd" readonly="readonly" style="width:88px;" placeholder="创建日期" title="创建日期"/></td>
+								<%--<td style="padding-left:2px;"><input class="span10 date-picker" name="lastStart" id="lastStart"  value="" type="text" data-date-format="yyyy-mm-dd" readonly="readonly" style="width:88px;" placeholder="创建日期" title="创建日期"/></td>--%>
 								<%--<td style="padding-left:2px;"><input class="span10 date-picker" name="lastEnd" name="lastEnd"  value="" type="text" data-date-format="yyyy-mm-dd" readonly="readonly" style="width:88px;" placeholder="结束日期" title="结束日期"/></td>
 								<td style="vertical-align:top;padding-left:2px;">
 								 	<select class="chosen-select form-control" name="name" id="id" data-placeholder="请选择" style="vertical-align:top;width: 120px;">
@@ -55,7 +55,7 @@
 								<c:if test="${QX.cha == 1 }">
 								<td style="vertical-align:top;padding-left:2px"><a class="btn btn-light btn-xs" onclick="tosearch();"  title="检索"><i id="nav-search-icon" class="ace-icon fa fa-search bigger-110 nav-search-icon blue"></i></a></td>
 								</c:if>
-								<c:if test="${QX.toExcel == 1 }"><td style="vertical-align:top;padding-left:2px;"><a class="btn btn-light btn-xs" onclick="toExcel();" title="导出到EXCEL"><i id="nav-search-icon" class="ace-icon fa fa-download bigger-110 nav-search-icon blue"></i></a></td></c:if>
+								<%--<c:if test="${QX.toExcel == 1 }"><td style="vertical-align:top;padding-left:2px;"><a class="btn btn-light btn-xs" onclick="toExcel();" title="导出到EXCEL"><i id="nav-search-icon" class="ace-icon fa fa-download bigger-110 nav-search-icon blue"></i></a></td></c:if>--%>
 							</tr>
 						</table>
 						<!-- 检索  -->
@@ -87,7 +87,7 @@
 									<c:forEach items="${varList}" var="var" varStatus="vs">
 										<tr>
 											<td class='center'>
-												<label class="pos-rel"><input type='checkbox' name='ids' value="${var.VARIETY_ID}" class="ace" /><span class="lbl"></span></label>
+												<label class="pos-rel"><input type='checkbox' name='ids' value="${var.VARIETY_ID}" path="${var.IMAGE}" class="ace" /><span class="lbl"></span></label>
 											</td>
 											<td class='center' style="width: 30px;">${vs.index+1}</td>
 											<%--<td class='center'>${var.VARIETY_ID}</td>--%>
@@ -115,7 +115,7 @@
 													</a>
 													</c:if>
 													<c:if test="${QX.del == 1 }">
-													<a class="btn btn-xs btn-danger" onclick="del('${var.VARIETY_ID}');">
+													<a class="btn btn-xs btn-danger" onclick="del('${var.VARIETY_ID}','${var.IMAGE}');">
 														<i class="ace-icon fa fa-trash-o bigger-120" title="删除"></i>
 													</a>
 													</c:if>
@@ -295,11 +295,11 @@
 		}
 		
 		//删除
-		function del(Id){
+		function del(Id,image){
 			bootbox.confirm("确定要删除吗?", function(result) {
 				if(result) {
 					top.jzts();
-					var url = "<%=basePath%>variety/delete.do?VARIETY_ID="+Id+"&tm="+new Date().getTime();
+					var url = "<%=basePath%>variety/delete.do?VARIETY_ID="+Id+"&tm="+new Date().getTime()+"&IMAGE="+image;
 					$.get(url,function(data){
 						tosearch();
 					});
@@ -333,10 +333,14 @@
 			bootbox.confirm(msg, function(result) {
 				if(result) {
 					var str = '';
+					var path  = '';
 					for(var i=0;i < document.getElementsByName('ids').length;i++){
 					  if(document.getElementsByName('ids')[i].checked){
 					  	if(str=='') str += document.getElementsByName('ids')[i].value;
 					  	else str += ',' + document.getElementsByName('ids')[i].value;
+						  if(path=='') path += document.getElementsByName('ids')[i].attributes["path"].nodeValue; // 获得  ;
+						  else path += ',' +document.getElementsByName('ids')[i].attributes["path"].nodeValue;
+
 					  }
 					}
 					if(str==''){
@@ -354,11 +358,12 @@
 						return;
 					}else{
 						if(msg == '确定要删除选中的数据吗?'){
+							alert(path);
 							/*top.jzts();*/
 							$.ajax({
 								type: "POST",
 								url: '<%=basePath%>variety/deleteAll.do?tm='+new Date().getTime(),
-						    	data: {DATA_IDS:str},
+						    	data: {DATA_IDS:str,DATA_PATH:path},
 								dataType:'json',
 								//beforeSend: validateData,
 								cache: false,

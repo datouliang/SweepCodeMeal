@@ -2,6 +2,7 @@ package com.fh.controller.system.variety;
 
 import com.fh.controller.base.BaseController;
 import com.fh.entity.Page;
+import com.fh.entity.system.User;
 import com.fh.service.system.specification.SpecificationMapper;
 import com.fh.service.system.variety.VarietyMapper;
 import com.fh.util.*;
@@ -41,27 +42,33 @@ public class varietyController extends BaseController{
     public ModelAndView save() throws Exception{
         logBefore(logger, Jurisdiction.getUsername()+"新增VARIETY");
         if(!Jurisdiction.buttonJurisdiction(menuUrl, "add")){return null;} //校验权限
+        User user  = UserUtil.getLoginUser();
+        System.out.println(user.getUSER_ID()+"当前登录人:"+user.getNAME());
         String VARIETY_ID =this.get32UUID();
         ModelAndView mv = this.getModelAndView();
         PageData pd = new PageData();
         pd = this.getPageData();
-        String str = pd.get("SPECIFICATION").toString();
-        String[] strs = str.split(",");
-        for(int i=0;i<strs.length;i++){
-            System.out.println(strs[i]);
-            i= i+1;
+        String id = pd.get("SPECIFICATION_ID").toString();
+        String[] ids = id.split(",");
+        String name = pd.get("SPECIFICATION_NAME").toString();
+        String[] names = name.split(",");
+        String price = pd.get("SPECIFICATION_PRICE").toString();
+        String[] prices = price.split(",");
+        String specification = "";
+        for(int i=0;i<names.length;i++){
+            specification += names[i]+":"+prices[i]+"元</br>";
             PageData spd = new PageData();
             spd.put("SPECIFICATION_ID",this.get32UUID());
-            spd.put("NAME",strs[i]);
+            spd.put("NAME",names[i]);
             spd.put("VARIETY_ID",VARIETY_ID);
             spd.put("CREATE_TIME",new Date());
-            spd.put("UPDATE_TIME",new Date());
-            spd.put("PRICE",Double.valueOf(strs[i]).doubleValue());
+            spd.put("PRICE",Double.valueOf(prices[i]).doubleValue());
             specificationService.save(spd);
         }
+        pd.put("USER_ID",user.getUSER_ID());
+        pd.put("SPECIFICATION",specification); //规格
         pd.put("VARIETY_ID", VARIETY_ID);	//主键
         pd.put("CREATE_TIME",new Date());
-        pd.put("UPDATE_TIME",new Date());
         varietyService.save(pd);
         mv.addObject("msg","success");
         mv.setViewName("save_result");
@@ -78,6 +85,12 @@ public class varietyController extends BaseController{
         if(!Jurisdiction.buttonJurisdiction(menuUrl, "del")){return;} //校验权限
         PageData pd = new PageData();
         pd = this.getPageData();
+        PageData spd = new PageData();
+        spd.put("VARIETY_ID",pd.get("VARIETY_ID"));
+        specificationService.deleteByVariety(spd);
+        if(Tools.notEmpty(pd.get("IMAGE").toString().trim())){//图片路径
+            DelAllFile.delFolder(PathUtil.getClasspath()+ Const.FILEPATHIMG + pd.get("IMAGE").toString()); 	//删除图片
+        }
         varietyService.delete(pd);
         out.write("success");
         out.close();
@@ -94,6 +107,26 @@ public class varietyController extends BaseController{
         ModelAndView mv = this.getModelAndView();
         PageData pd = new PageData();
         pd = this.getPageData();
+        String VARIETY_ID = pd.get("VARIETY_ID").toString();
+        String id = pd.get("SPECIFICATION_ID").toString();
+        String[] ids = id.split(",");
+        String name = pd.get("SPECIFICATION_NAME").toString();
+        String[] names = name.split(",");
+        String price = pd.get("SPECIFICATION_PRICE").toString();
+        String[] prices = price.split(",");
+        String specification = "";
+        for(int i=0;i<ids.length;i++){
+            specification += names[i]+":"+prices[i]+"元</br>";
+            PageData spd = new PageData();
+            spd.put("SPECIFICATION_ID",ids[i]);
+            spd.put("NAME",names[i]);
+            spd.put("VARIETY_ID",VARIETY_ID);
+            spd.put("UPDATE_TIME",new Date());
+            spd.put("PRICE",Double.valueOf(prices[i]).doubleValue());
+            specificationService.edit(spd);
+        }
+        pd.put("SPECIFICATION",specification); //规格
+        pd.put("UPDATE_TIME",new Date());
         varietyService.edit(pd);
         mv.addObject("msg","success");
         mv.setViewName("save_result");
@@ -106,6 +139,8 @@ public class varietyController extends BaseController{
      */
     @RequestMapping(value="/list")
     public ModelAndView list(Page page) throws Exception{
+        User user  = UserUtil.getLoginUser();
+        System.out.println(user.getUSER_ID()+"当前登录人:"+user.getNAME());
         logBefore(logger, Jurisdiction.getUsername()+"列表VARIETY");
         //if(!Jurisdiction.buttonJurisdiction(menuUrl, "cha")){return null;} //校验权限(无权查看时页面会有提示,如果不注释掉这句代码就无法进入列表页面,所以根据情况是否加入本句代码)
         ModelAndView mv = this.getModelAndView();
@@ -115,6 +150,7 @@ public class varietyController extends BaseController{
         if(null != keywords && !"".equals(keywords)){
             pd.put("keywords", keywords.trim());
         }
+        pd.put("USER_ID",user.getUSER_ID());
         page.setPd(pd);
         List<PageData>	varList = varietyService.list(page);	//列出VARIETY列表
         mv.setViewName("variety/variety_list");
@@ -153,7 +189,7 @@ public class varietyController extends BaseController{
         spd.put("VARIETY_ID",VARIETY_ID);
         List<PageData> specifications = specificationService.findByFid(spd);
         if(specifications.size()>0){
-            pd.put("specifications",specifications);
+            mv.addObject("specifications",specifications);
         }
         pd = varietyService.findById(pd);	//根据ID读取
         mv.setViewName("variety/variety_edit");
@@ -176,6 +212,22 @@ public class varietyController extends BaseController{
         pd = this.getPageData();
         List<PageData> pdList = new ArrayList<PageData>();
         String DATA_IDS = pd.getString("DATA_IDS");
+        String DATA_PATH = pd.getString("DATA_PATH");
+        System.out.println(DATA_PATH);
+        String[] paths = DATA_PATH.split(",");
+        String[] ids = DATA_IDS.split(",");
+        String PATH = "";
+        String id = "";
+        for(int i = 0; i<paths.length; i++){
+            PATH = paths[i];
+            if(Tools.notEmpty(PATH.trim())){//图片路径
+                DelAllFile.delFolder(PathUtil.getClasspath()+ Const.FILEPATHIMG + PATH); 	//删除图片
+            }
+            id = ids[i];
+            PageData spd = new PageData();
+            spd.put("VARIETY_ID",id);
+            specificationService.deleteByVariety(spd);
+        }
         if(null != DATA_IDS && !"".equals(DATA_IDS)){
             String ArrayDATA_IDS[] = DATA_IDS.split(",");
             varietyService.deleteAll(ArrayDATA_IDS);
@@ -294,7 +346,7 @@ public class varietyController extends BaseController{
      * @param PATH
      * @throws Exception
      */
-    @RequestMapping(value="/deltp")
+    @RequestMapping(value="/deltp",method = RequestMethod.POST)
     public void deltp(String PATH) throws Exception {
         if(Tools.notEmpty(PATH.trim())){//图片路径
             DelAllFile.delFolder(PathUtil.getClasspath()+ Const.FILEPATHIMG + PATH); 	//删除图片
